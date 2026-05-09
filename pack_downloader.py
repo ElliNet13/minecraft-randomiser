@@ -3,11 +3,23 @@ import zipfile
 import argparse
 import shutil
 import os
+import signal
+import sys
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 
 ASSETS_BASE = "https://resources.download.minecraft.net/"
+STOP_EVENT = threading.Event()
+
+
+def handle_sigint(signum, frame):
+    if not STOP_EVENT.is_set():
+        print("\nInterrupted by user. Stopping...")
+        STOP_EVENT.set()
+
+
+signal.signal(signal.SIGINT, handle_sigint)
 
 def grab_minecraft_manifest():
     url = "https://launchermeta.mojang.com/mc/game/version_manifest.json"
@@ -38,6 +50,9 @@ def download_single_asset(args):
     dest = os.path.join(output_dir, "assets", key.replace("/", os.sep))
     os.makedirs(os.path.dirname(dest), exist_ok=True)
 
+    if STOP_EVENT.is_set():
+        return False
+
     try:
         r = requests.get(url, timeout=15)
         r.raise_for_status()
@@ -48,6 +63,8 @@ def download_single_asset(args):
         return True
 
     except Exception as e:
+        if STOP_EVENT.is_set():
+            return False
         print(f"Failed: {key} -> {e}")
         return False
 
@@ -66,11 +83,19 @@ def download_assets(asset_index, output_dir="pack", workers=12):
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = [executor.submit(download_single_asset, t) for t in tasks]
 
-        for f in tqdm(as_completed(futures), total=total, desc="Assets"):
-            result = f.result()
-            done += 1
-            if result:
-                success += 1
+        try:
+            for f in tqdm(as_completed(futures), total=total, desc="Assets"):
+                result = f.result()
+                done += 1
+                if result:
+                    success += 1
+        except KeyboardInterrupt:
+            STOP_EVENT.set()
+            print("\nInterrupted during asset download. Waiting for workers to stop...")
+            try:
+                executor.shutdown(wait=False, cancel_futures=True)
+            except TypeError:
+                executor.shutdown(wait=False)
 
     print(f"Assets done: {success}/{total}")
 
