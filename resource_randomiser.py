@@ -336,8 +336,16 @@ elif os.path.exists(os.path.join(resourcepack,'pack.png')):
     shutil.copyfile(os.path.join(resourcepack,'pack.png'), os.path.join(f'shuffled-{randomseed}', 'pack.png'))
 
 makepath(os.path.join(f'shuffled-{randomseed}', 'pack.mcmeta'))
-with open(os.path.join(f'shuffled-{randomseed}', 'pack.mcmeta'), "w") as descfile:
-    descfile.write('{"pack":{"pack_format":4,"description":"https://github.com/ElliNet13/minecraft-randomiser - MC Data Randomizer, Seed: '+str(randomseed)+'"}}')
+original_mcmeta = os.path.join(resourcepack, 'pack.mcmeta')
+if os.path.exists(original_mcmeta):
+    with open(original_mcmeta, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    data['pack']['description'] += f" - https://github.com/ElliNet13/minecraft-randomiser - MC Data Randomizer, Seed: {randomseed}"
+    with open(os.path.join(f'shuffled-{randomseed}', 'pack.mcmeta'), 'w', encoding='utf-8') as f:
+        json.dump(data, f)
+else:
+    with open(os.path.join(f'shuffled-{randomseed}', 'pack.mcmeta'), "w") as descfile:
+        descfile.write('{"pack":{"pack_format":4,"description":"https://github.com/ElliNet13/minecraft-randomiser - MC Data Randomizer, Seed: '+str(randomseed)+'"}}')
 
 if auto_install:
     print('Installing to resource pack folder')
