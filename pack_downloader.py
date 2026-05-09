@@ -21,19 +21,21 @@ def handle_sigint(signum, frame):
 
 signal.signal(signal.SIGINT, handle_sigint)
 
+session = requests.Session()
+
 def grab_minecraft_manifest():
     url = "https://launchermeta.mojang.com/mc/game/version_manifest.json"
-    r = requests.get(url)
+    r = session.get(url)
     r.raise_for_status()
     return r.json()
 
 def grab_version_json(version_info):
-    r = requests.get(version_info["url"])
+    r = session.get(version_info["url"])
     r.raise_for_status()
     return r.json()
 
 def download_file(url, path):
-    r = requests.get(url, stream=True)
+    r = session.get(url, stream=True)
     r.raise_for_status()
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "wb") as f:
@@ -54,7 +56,7 @@ def download_single_asset(args):
         return False
 
     try:
-        r = requests.get(url, timeout=15)
+        r = session.get(url, timeout=15)
         r.raise_for_status()
 
         with open(dest, "wb") as f:
@@ -121,7 +123,7 @@ if __name__ == "__main__":
     asset_index_url = version_json["assetIndex"]["url"]
     print("Downloading asset index...")
 
-    r = requests.get(asset_index_url)
+    r = session.get(asset_index_url)
     r.raise_for_status()
     asset_index = r.json()
 
@@ -132,7 +134,7 @@ if __name__ == "__main__":
     jar_url = version_json["downloads"]["client"]["url"]
     print(f"Downloading JAR: {jar_url}")
 
-    r = requests.get(jar_url)
+    r = session.get(jar_url)
     r.raise_for_status()
 
     with open("minecraft.jar", "wb") as f:
