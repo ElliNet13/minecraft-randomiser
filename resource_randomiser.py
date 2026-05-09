@@ -243,18 +243,20 @@ if auto_install:
         elif system.startswith('win'):
             destfolder = os.path.expandvars(os.path.join('%APPDATA%', '.minecraft', 'resourcepacks', f'shuffle-{randomseed}'))
         else:
-            destfolder = 'shuffle'
+            destfolder = f'shuffle-{randomseed}'
             print('Failed to identify operating system, placing file in current folder instead.')
         shutil.make_archive(destfolder, 'zip', f'shuffled-{randomseed}')
         print('Resource pack installed!')
-        shutil.rmtree('shuffled')
-    except:
+        shutil.rmtree(f'shuffled-{randomseed}')
+    except Exception as e:
         print('Compression failed! Please manually move the "shuffled" folder to your resource pack folder.')
+        print(f'Error details: {e}')
 else:
     print('Creating shuffled pack archive')
     try:
-        shutil.make_archive('shuffle', 'zip', f'shuffled-{randomseed}')
+        shutil.make_archive(f'shuffle-{randomseed}', 'zip', f'shuffled-{randomseed}')
         print(f'Shuffled pack created as shuffle-{randomseed}.zip')
-        shutil.rmtree('shuffled')
-    except:
+        shutil.rmtree(f'shuffled-{randomseed}')
+    except Exception as e:
         print('Compression failed! The "shuffled" folder contains the randomized pack.')
+        print(f'Error details: {e}')
