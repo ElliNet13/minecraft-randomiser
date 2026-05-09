@@ -1,7 +1,12 @@
 shuffle.zip
 random_data_*.zip
-shuffle/
+shuffled/
 build/
 dist/       
 __pycache__/
 *.spec
+
+pack/
+data/
+
+minecraft.jar
