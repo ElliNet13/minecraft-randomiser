@@ -16,7 +16,7 @@ parser.add_argument('--nosounds', action='store_false', dest='sounds', help='dis
 parser.add_argument('--notexts', action='store_false', dest='texts', help='disables randomised text')
 parser.add_argument('--nofonts', action='store_false', dest='fonts', help='disables randomised fonts')
 parser.add_argument('--noshaders', action='store_false', dest='shaders', help='disables randomised shaders')
-parser.add_argument('--models', action='store_true', dest='models', help='EXPERIMENTAL: randomised block/item models')
+parser.add_argument('--nomodels', action='store_false', dest='models', help='EXPERIMENTAL: randomised block/item models')
 
 args = parser.parse_args()
 resourcepack = args.pack
