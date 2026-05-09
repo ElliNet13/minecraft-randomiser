@@ -155,7 +155,7 @@ with tqdm(total=total_steps, desc="Overall Progress") as overall_pbar:
             random.shuffle(shufflelist)
             for i, orig_file in enumerate(toRando):
                 filename = orig_file.split(os.path.sep)[-1]
-                destfile = f'shuffled'
+                destfile = f'shuffled-{randomseed}'
                 for newpath in orig_file.split(os.path.sep)[1:]:
                     destfile = os.path.join(destfile, newpath)
 
@@ -195,7 +195,7 @@ with tqdm(total=total_steps, desc="Overall Progress") as overall_pbar:
                     randindex = random.randint(0, len(langvalues)-1)
                     shufflelang[key] = langvalues[randindex]
                     del langvalues[randindex]
-                destpath = 'shuffled' + lang[4:]
+                destpath = f'shuffled-{randomseed}' + lang[4:]
                 makepath(destpath)
                 with open(destpath, 'w', encoding='utf-8') as output:
                     json.dump(shufflelang, output)
@@ -213,7 +213,7 @@ with tqdm(total=total_steps, desc="Overall Progress") as overall_pbar:
                     outputlines.append(langvalues[randindex])
                     del langvalues[randindex]
                     linesadded += 1
-                destpath = 'shuffled' + tfile[4:]
+                destpath = f'shuffled-{randomseed}' + tfile[4:]
                 makepath(destpath)
                 with open(destpath, 'w', encoding='utf-8') as output:
                     output.write('\n'.join(outputlines))
@@ -223,13 +223,13 @@ with tqdm(total=total_steps, desc="Overall Progress") as overall_pbar:
 
 print("Creating meta files")
 if "16x16" in images.keys():
-    shutil.copyfile(random.choice(images["16x16"]), os.path.join('shuffled','pack.png'))
+    shutil.copyfile(random.choice(images["16x16"]), os.path.join(f'shuffled-{randomseed}', 'pack.png'))
 elif os.path.exists(os.path.join(resourcepack,'pack.png')):
-    shutil.copyfile(os.path.join(resourcepack,'pack.png'), os.path.join('shuffled','pack.png'))
+    shutil.copyfile(os.path.join(resourcepack,'pack.png'), os.path.join(f'shuffled-{randomseed}', 'pack.png'))
 
-makepath(os.path.join('shuffled','pack.mcmeta'))
-with open(os.path.join('shuffled','pack.mcmeta'), "w") as descfile:
-    descfile.write('{"pack":{"pack_format":4,"description":"Minecraft Shuffled by lexikiq"}}')
+makepath(os.path.join(f'shuffled-{randomseed}', 'pack.mcmeta'))
+with open(os.path.join(f'shuffled-{randomseed}', 'pack.mcmeta'), "w") as descfile:
+    descfile.write('{"pack":{"pack_format":4,"description":"https://github.com/ElliNet13/minecraft-randomiser - MC Data Randomizer, Seed: '+str(randomseed)+'"}}')
 
 if auto_install:
     print('Installing to resource pack folder')
@@ -237,11 +237,11 @@ if auto_install:
     try:
         system = sys.platform.lower()
         if system.startswith('linux'):
-            destfolder = os.path.expanduser(os.path.join('~', '.minecraft', 'resourcepacks', 'shuffle'))
+            destfolder = os.path.expanduser(os.path.join('~', '.minecraft', 'resourcepacks', f'shuffle-{randomseed}'))
         elif system.startswith('darwin'):
-            destfolder = os.path.expanduser(os.path.join('~', 'Library', 'Application Support', 'minecraft', 'resourcepacks', 'shuffle'))
+            destfolder = os.path.expanduser(os.path.join('~', 'Library', 'Application Support', 'minecraft', 'resourcepacks', f'shuffle-{randomseed}'))
         elif system.startswith('win'):
-            destfolder = os.path.expandvars(os.path.join('%APPDATA%', '.minecraft', 'resourcepacks', 'shuffle'))
+            destfolder = os.path.expandvars(os.path.join('%APPDATA%', '.minecraft', 'resourcepacks', f'shuffle-{randomseed}'))
         else:
             destfolder = 'shuffle'
             print('Failed to identify operating system, placing file in current folder instead.')
@@ -253,8 +253,8 @@ if auto_install:
 else:
     print('Creating shuffled pack archive')
     try:
-        shutil.make_archive('shuffle', 'zip', 'shuffled')
-        print('Shuffled pack created as shuffle.zip')
+        shutil.make_archive('shuffle', 'zip', f'shuffled-{randomseed}')
+        print(f'Shuffled pack created as shuffle-{randomseed}.zip')
         shutil.rmtree('shuffled')
     except:
         print('Compression failed! The "shuffled" folder contains the randomized pack.')
