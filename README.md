@@ -34,7 +34,7 @@ To use, simply run `resource_randomiser.py` in python3, or double click the exec
 
 ## `data_randomiser.py`
 
-This randomises the Minecraft data pack, which includes files such as loot tables for random block drops, recipes, advancements, and experimentally structures (disabled by default, some configurations crash).
+This randomises the Minecraft data pack, which includes files such as loot tables for random block drops, recipes, advancements, and experimentally structures (enabled by default, some configurations crash so disable if crash).
 
 ### Usage
 
@@ -42,7 +42,7 @@ This randomises the Minecraft data pack, which includes files such as loot table
 
 `python3 data_randomiser.py` - Randomises loot tables, recipes, and advancements.
 
-`python3 data_randomiser.py --norecipes --structures` - Enables structure randomisation and disables recipes.
+`python3 data_randomiser.py --norecipes --nostructures` - Disables structure randomisation and disables recipes.
 
 `python3 data_randomiser.py --randomlootamount 64` - Items can drop up to 64 times (not amount of items but rather amount of loot)
 

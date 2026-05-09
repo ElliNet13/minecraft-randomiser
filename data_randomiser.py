@@ -17,7 +17,7 @@ parser.add_argument('--noloottables', action='store_false', dest='loottables', h
 parser.add_argument('--preservechances', action='store_false', dest='lootchances', help='[loot] preserves normal loot chances instead of guranteed chance')
 parser.add_argument('--norecipes', action='store_false', dest='recipes', help='disables randomised recipes')
 parser.add_argument('--notags', action='store_false', dest='tags', help='disables randomised tags')
-parser.add_argument('--structures', action='store_true', dest='structures', help='enables randomised structures (may crash)')
+parser.add_argument('--nostructures', action='store_false', dest='structures', help='disables randomised structures (may crash ehen enabled)')
 
 args = parser.parse_args()
 datafolder = args.data
