@@ -32,6 +32,8 @@ To use, simply run `resource_randomiser.py` in python3, or double click the exec
 
 `python3 resource_randomiser.py --notextures --nosounds --pack faithful` - Randomise everything except the textures and sounds from the resource pack in the "faithful" folder.
 
+`python3 resource_randomiser.py --notextures --noblockstates --nosounds --nofonts --noshaders --langs en_us` - Literally just Minecraft but english (en_us) is randomised
+
 ## `data_randomiser.py`
 
 This randomises the Minecraft data pack, which includes files such as loot tables for random block drops, recipes, advancements, and experimentally structures (enabled by default, some configurations crash so disable if crash).
