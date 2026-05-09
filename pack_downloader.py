@@ -102,7 +102,7 @@ def download_assets(asset_index, output_dir="pack", workers=12):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download Minecraft assets + packs.")
     parser.add_argument("version", type=str)
-    parser.add_argument("-w", "--workers", type=int, default=20, help="Number of threads to use for downloading assets.")
+    parser.add_argument("-w", "--workers", type=int, default=30, help="Number of threads to use for downloading assets.")
     args = parser.parse_args()
 
     print("Downloading manifest...")
