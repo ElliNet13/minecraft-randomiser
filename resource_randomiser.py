@@ -16,9 +16,11 @@ parser.add_argument('--nosounds', action='store_false', dest='sounds', help='dis
 parser.add_argument('--notexts', action='store_false', dest='texts', help='disables randomised text')
 parser.add_argument('--nofonts', action='store_false', dest='fonts', help='disables randomised fonts')
 parser.add_argument('--noshaders', action='store_false', dest='shaders', help='disables randomised shaders')
+parser.add_argument('--install', action='store_true', dest='install', help='auto-install the shuffled pack to the Minecraft resourcepacks folder')
 parser.add_argument('--nomodels', action='store_false', dest='models', help='EXPERIMENTAL: randomised block/item models')
 
 args = parser.parse_args()
+
 resourcepack = args.pack
 randomseed = args.seed
 randomisetextures = args.textures
@@ -30,6 +32,7 @@ randomisetext = args.texts
 randomisefont = args.fonts
 randomiseshaders = args.shaders
 alttextures = args.alttextures
+auto_install = args.install
 
 random.seed(randomseed)
 
@@ -252,21 +255,30 @@ makepath(os.path.join('shuffled','pack.mcmeta'))
 with open(os.path.join('shuffled','pack.mcmeta'), "w") as descfile:
     descfile.write('{"pack":{"pack_format":4,"description":"Minecraft Shuffled by lexikiq"}}')
 
-print2('Installing to resource pack folder')
+if auto_install:
+    print2('Installing to resource pack folder')
 
-try:
-    system = sys.platform.lower()
-    if system.startswith('linux'):
-        destfolder = os.path.expanduser(os.path.join('~', '.minecraft', 'resourcepacks', 'shuffle'))
-    elif system.startswith('darwin'):
-        destfolder = os.path.expanduser(os.path.join('~', 'Library', 'Application Support', 'minecraft', 'resourcepacks', 'shuffle'))
-    elif system.startswith('win'):
-        destfolder = os.path.expandvars(os.path.join('%APPDATA%', '.minecraft', 'resourcepacks', 'shuffle'))
-    else:
-        destfolder = 'shuffle'
-        print2('Failed to identify operating system, placing file in current folder instead.')
-    shutil.make_archive(destfolder, 'zip', 'shuffled')
-    print2('Resource pack installed!')
-    shutil.rmtree('shuffled')
-except:
-    print2('Compression failed! Please manually move the "shuffled" folder to your resource pack folder.')
+    try:
+        system = sys.platform.lower()
+        if system.startswith('linux'):
+            destfolder = os.path.expanduser(os.path.join('~', '.minecraft', 'resourcepacks', 'shuffle'))
+        elif system.startswith('darwin'):
+            destfolder = os.path.expanduser(os.path.join('~', 'Library', 'Application Support', 'minecraft', 'resourcepacks', 'shuffle'))
+        elif system.startswith('win'):
+            destfolder = os.path.expandvars(os.path.join('%APPDATA%', '.minecraft', 'resourcepacks', 'shuffle'))
+        else:
+            destfolder = 'shuffle'
+            print2('Failed to identify operating system, placing file in current folder instead.')
+        shutil.make_archive(destfolder, 'zip', 'shuffled')
+        print2('Resource pack installed!')
+        shutil.rmtree('shuffled')
+    except:
+        print2('Compression failed! Please manually move the "shuffled" folder to your resource pack folder.')
+else:
+    print2('Creating shuffled pack archive')
+    try:
+        shutil.make_archive('shuffle', 'zip', 'shuffled')
+        print2('Shuffled pack created as shuffle.zip')
+        shutil.rmtree('shuffled')
+    except:
+        print2('Compression failed! The "shuffled" folder contains the randomized pack.')
