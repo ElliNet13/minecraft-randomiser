@@ -4,7 +4,8 @@ import argparse
 import shutil
 import os
 from tqdm import tqdm
-import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 ASSETS_BASE = "https://resources.download.minecraft.net/"
 
@@ -27,22 +28,56 @@ def download_file(url, path):
         for chunk in r.iter_content(8192):
             f.write(chunk)
 
-def download_assets(asset_index, output_dir="pack"):
+def download_single_asset(args):
+    key, value, output_dir = args
+
+    hash = value["hash"]
+    subdir = hash[:2]
+    url = f"{ASSETS_BASE}{subdir}/{hash}"
+
+    dest = os.path.join(output_dir, "assets", key.replace("/", os.sep))
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+
+    try:
+        r = requests.get(url, timeout=15)
+        r.raise_for_status()
+
+        with open(dest, "wb") as f:
+            f.write(r.content)
+
+        return True
+
+    except Exception as e:
+        print(f"Failed: {key} -> {e}")
+        return False
+
+
+def download_assets(asset_index, output_dir="pack", workers=12):
     objects = asset_index["objects"]
 
-    print(f"Downloading {len(objects)} assets...")
+    print(f"Downloading {len(objects)} assets with {workers} threads...")
 
-    for key, value in tqdm(objects.items(), desc="Assets"):
-        hash = value["hash"]
-        subdir = hash[:2]
-        url = f"{ASSETS_BASE}{subdir}/{hash}"
+    tasks = [(k, v, output_dir) for k, v in objects.items()]
+    total = len(tasks)
 
-        dest = os.path.join(output_dir, "assets", key.replace("/", os.sep))
-        download_file(url, dest)
+    done = 0
+    success = 0
+
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futures = [executor.submit(download_single_asset, t) for t in tasks]
+
+        for f in tqdm(as_completed(futures), total=total, desc="Assets"):
+            result = f.result()
+            done += 1
+            if result:
+                success += 1
+
+    print(f"Assets done: {success}/{total}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download Minecraft assets + packs.")
     parser.add_argument("version", type=str)
+    parser.add_argument("-w", "--workers", type=int, default=20, help="Number of threads to use for downloading assets.")
     args = parser.parse_args()
 
     print("Downloading manifest...")
@@ -89,6 +124,6 @@ if __name__ == "__main__":
     os.remove("minecraft.jar")
 
     # ---- DOWNLOAD ASSET OBJECTS ----
-    download_assets(asset_index, "pack")
+    download_assets(asset_index, "pack", workers=args.workers)
 
     print("Done.")
