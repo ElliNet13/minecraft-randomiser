@@ -316,13 +316,7 @@ print('Writing meta files')
 
 makepath(os.path.join('shuffled','pack.mcmeta'))
 with open(os.path.join('shuffled','pack.mcmeta'), "w") as descfile:
-    descfile.write('{"pack":{"pack_format": 5,"description": "MC Data Randomizer, Seed: '+str(randomseed)+'"}}')
-
-initfilepath = os.path.join('shuffled','data',f'random_data_{randomseed}','functions','reset.mcfunction')
-makepath(initfilepath)
-with open(initfilepath, "w") as initfile:
-    initfile.write('tellraw @a ["",{"text":"Data file randomiser by lexikiq - Aikoyori tries to fix this \n Seed '+str(randomseed)+'","color":"green"}]')
-    #initfile.write('tellraw @a ["",{"text":"Data file randomiser by lexikiq","color":"green"}]')
+    descfile.write('{"pack":{"pack_format": 5,"description": "https://github.com/ElliNet13/minecraft-randomiser - MC Data Randomizer, Seed: '+str(randomseed)+'"}}')
 
 loadjspath = os.path.join('shuffled','data','minecraft','tags','functions','load.json')
 makepath(loadjspath)
