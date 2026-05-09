@@ -155,7 +155,7 @@ with tqdm(total=total_steps, desc="Overall Progress") as overall_pbar:
             random.shuffle(shufflelist)
             for i, orig_file in enumerate(toRando):
                 filename = orig_file.split(os.path.sep)[-1]
-                destfile = f'shuffled-{randomseed}'
+                destfile = f'shuffled'
                 for newpath in orig_file.split(os.path.sep)[1:]:
                     destfile = os.path.join(destfile, newpath)
 
@@ -245,7 +245,7 @@ if auto_install:
         else:
             destfolder = 'shuffle'
             print('Failed to identify operating system, placing file in current folder instead.')
-        shutil.make_archive(destfolder, 'zip', 'shuffled')
+        shutil.make_archive(destfolder, 'zip', f'shuffled-{randomseed}')
         print('Resource pack installed!')
         shutil.rmtree('shuffled')
     except:
